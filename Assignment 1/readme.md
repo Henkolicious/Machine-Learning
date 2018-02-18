@@ -1,1 +1,1 @@
-![Alt text](output_part2.png?raw=true "Part 2")
+![Screenshot](output_part2.png?raw=true)
