@@ -1,1 +1,1 @@
-![Screenshot](output_part2.png?raw=true)
+![Screenshot](output_part2.png)
