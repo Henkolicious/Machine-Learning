@@ -1,13 +1,15 @@
 # Author: Henrik Larsson
-# Date: 2018-02-11
+# Date: 2018-02-18
 
+# used help from
 # https://machinelearningmastery.com/tutorial-to-implement-k-nearest-neighbors-in-python-from-scratch/
 
-import numpy as np
-import csv
+# run this --> pip install -r requirements.txt
 import math
 import random
 import operator
+import copy
+from colorama import Fore, Back, Style, init
 
 
 def printMatrix(matrix):
@@ -27,7 +29,6 @@ def euclideanDistance(a, b, indexFrom, indexTo):
 def getClosestNeighbors(trainingSet, testInstance, numberOfNeighbors):
     if (numberOfNeighbors > len(trainingSet)):
         print("\nk is too large for the dataset of length: ", len(trainingSet))
-        print("--> ABORTING")
         return
 
     distances = []
@@ -51,41 +52,21 @@ def getClosestNeighbors(trainingSet, testInstance, numberOfNeighbors):
     return neighbors
 
 
-def testNeighborsFunction(k):
-    print("### Testing neighbor function ###")
-    trainingSet = [['a', 1, 1, 1],  ['b', 4, 4, 4], ['c', 6, 6, 6]]
-    testInstance = [3, 3, 3]
-    neighbors = getClosestNeighbors(trainingSet, testInstance, k)
-    print("\nk = ", k)
-    print("training set:", trainingSet)
-    print("testing on point:", testInstance)
-    print("result:")
-    print("Closest neighbor(s)", neighbors)
-    print("\n### - ###")
-
-
 def getVotesForNeightbors(neighbors):
     classVotes = {}
     for x in range(len(neighbors)):
-        response = neighbors[x][-1]
+        response = neighbors[x][0]
         if response in classVotes:
             classVotes[response] += 1
         else:
             classVotes[response] = 1
 
-    print(classVotes)
+    # sort values
     sortedVotes = sorted(classVotes.items(),
                          key=operator.itemgetter(1), reverse=True)
-    print(sortedVotes)
 
+    # return first object
     return sortedVotes[0]
-
-
-def testVotesForNeightbors():
-    neighbors = [[1, 1, 1, 'b'], [2, 2, 2, 'a'],
-                 [3, 3, 3, 'b'], [4, 4, 4, 'a']]
-    votedResponse = getVotesForNeightbors(neighbors)
-    print("Highest votes: ", votedResponse)
 
 
 def getAccuracy(testSet, predictions):
@@ -96,35 +77,92 @@ def getAccuracy(testSet, predictions):
     return (correct/float(len(testSet))) * 100.0
 
 
-def testAccurasy():
-    testSet = [[1, 1, 1, 'a'], [2, 2, 2, 'a'], [3, 3, 3, 'b']]
-    predictions = ['a', 'a', 'a']
-    accuracy = getAccuracy(testSet, predictions)
-    print(accuracy)
+def kAverage(neighbors):
+    values = []
+    for x in range(len(neighbors)):
+        values.append(neighbors[x][0])
+
+    # average = parse integer (sum / number of items)
+    return int(sum(values) / len(values))
+
+
+def kMedian(neighbors):
+    values = []
+    for x in range(len(neighbors)):
+        values.append(neighbors[x][0])
+
+    length = len(values)
+    if length < 1:
+        return None
+
+    # medain = middle value of array
+    values.sort(key=int)
+    return values[math.floor(length/2)]
+
+
+def getPredictions(predictions, training_matrix, testing_matrix, k, use_kMedian):
+
+    if use_kMedian:
+        print(Back.GREEN + "using k-median")
+    else:
+        print(Back.RED + "using k-average")
+
+    for i in range(len(testing_matrix)):
+        # use the training data and compair the testa data X to k neighbors
+        neighbors = getClosestNeighbors(training_matrix, testing_matrix[i], k)
+
+        if use_kMedian:
+            predictions[i][0] = kMedian(neighbors)
+        else:
+            predictions[i][0] = kAverage(neighbors)
+
+    return predictions
+
+
+def solveAssignment(training_matrix, testing_matrix, k, use_kMedian):
+    predictions = copy.deepcopy(testing_matrix)
+    predictions = getPredictions(
+        predictions, training_matrix, testing_matrix, k, use_kMedian)
+
+    for i in range(len(testing_matrix)):
+        print("Input value: ",
+              testing_matrix[i],
+              "\nPredicting house value with k = " +
+              (Back.MAGENTA + repr(k)), "-",
+              predictions[i][0],
+              "\n")
 
 
 def main():
 
-    print("")
     # CSV --> Price, Number of rooms, Size (m^2), Age of house
-    # training_matrix = [
-    #     [500000, 2, 45, 25],
-    #     [800000, 3, 65, 30],
-    #     [1000000, 6, 100, 40],
-    #     [350000, 2, 30, 20],
-    #     [100000, 2, 25, 20]
-    # ]
+    training_matrix = [
+        [500000, 2, 45, 25],
+        [800000, 3, 65, 30],
+        [1000000, 6, 100, 40],
+        [350000, 2, 30, 20],
+        [100000, 2, 25, 20]
+    ]
 
     # CSV --> Price, Number of rooms, Size (m^2), Age of house
-    # testing_matrix = [
-    #     ['x', 4, 100, 25],
-    #     ['x', 1, 60, 20]
-    # ]
+    testing_matrix = [
+        [None, 4, 100, 25],
+        [None, 1, 60, 20]
+    ]
 
-    # printMatrix(training_matrix)
-    # print(np.matrix(training_matrix))
-    # testNeighborsFunction(3)
-    # testVotesForNeightbors()
-    # testAccurasy()
+    print("Training data:")
+    printMatrix(training_matrix)
+    print()
 
+    use_kMedian = True
+    k = 1
+    solveAssignment(training_matrix, testing_matrix, k, use_kMedian)
+    solveAssignment(training_matrix, testing_matrix, k, not use_kMedian)
+
+    k = 2
+    solveAssignment(training_matrix, testing_matrix, k, use_kMedian)
+    solveAssignment(training_matrix, testing_matrix, k, not use_kMedian)
+
+
+init(autoreset=True)
 main()
