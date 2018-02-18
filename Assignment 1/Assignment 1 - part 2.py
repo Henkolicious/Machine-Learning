@@ -69,14 +69,6 @@ def getVotesForNeightbors(neighbors):
     return sortedVotes[0]
 
 
-def getAccuracy(testSet, predictions):
-    correct = 0
-    for x in range(len(testSet)):
-        if testSet[x][-1] is predictions[x]:
-            correct += 1
-    return (correct/float(len(testSet))) * 100.0
-
-
 def kAverage(neighbors):
     values = []
     for x in range(len(neighbors)):
@@ -166,3 +158,42 @@ def main():
 
 init(autoreset=True)
 main()
+
+'''
+Output:
+
+Training data:
+500000  2       45      25
+800000  3       65      30
+1000000 6       100     40
+350000  2       30      20
+100000  2       25      20
+
+using k-median
+Input value:  [None, 4, 100, 25]
+Predicting house value with k = 1 - 1000000
+
+Input value:  [None, 1, 60, 20]
+Predicting house value with k = 1 - 800000
+
+using k-average
+Input value:  [None, 4, 100, 25]
+Predicting house value with k = 1 - 1000000
+
+Input value:  [None, 1, 60, 20]
+Predicting house value with k = 1 - 800000
+
+using k-median
+Input value:  [None, 4, 100, 25]
+Predicting house value with k = 2 - 1000000
+
+Input value:  [None, 1, 60, 20]
+Predicting house value with k = 2 - 800000
+
+using k-average
+Input value:  [None, 4, 100, 25]
+Predicting house value with k = 2 - 900000
+
+Input value:  [None, 1, 60, 20]
+Predicting house value with k = 2 - 650000
+'''
