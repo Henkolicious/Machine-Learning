@@ -1,5 +1,6 @@
 # Author: Henrik Larsson
 # Date: 2018-02-18
+# First time using Python
 
 # used help from
 # https://machinelearningmastery.com/tutorial-to-implement-k-nearest-neighbors-in-python-from-scratch/

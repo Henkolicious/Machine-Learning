@@ -1,5 +1,6 @@
 # Author: Henrik Larsson
 # Date: 2018-02-10
+# First time using Python
 
 # python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
 # https://www.scipy.org/install.html
