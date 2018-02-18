@@ -95,9 +95,9 @@ def kMedian(neighbors):
 def getPredictions(predictions, training_matrix, testing_matrix, k, use_kMedian):
 
     if use_kMedian:
-        print(Back.GREEN + "using k-median")
+        print(Back.GREEN + "# using k-median")
     else:
-        print(Back.RED + "using k-average")
+        print(Back.RED + "# using k-average")
 
     for i in range(len(testing_matrix)):
         # use the training data and compair the testa data X to k neighbors
@@ -169,28 +169,28 @@ Training data:
 350000  2       30      20
 100000  2       25      20
 
-using k-median
+# using k-median
 Input value:  [None, 4, 100, 25]
 Predicting house value with k = 1 - 1000000
 
 Input value:  [None, 1, 60, 20]
 Predicting house value with k = 1 - 800000
 
-using k-average
+# using k-average
 Input value:  [None, 4, 100, 25]
 Predicting house value with k = 1 - 1000000
 
 Input value:  [None, 1, 60, 20]
 Predicting house value with k = 1 - 800000
 
-using k-median
+# using k-median
 Input value:  [None, 4, 100, 25]
 Predicting house value with k = 2 - 1000000
 
 Input value:  [None, 1, 60, 20]
 Predicting house value with k = 2 - 800000
 
-using k-average
+# using k-average
 Input value:  [None, 4, 100, 25]
 Predicting house value with k = 2 - 900000
 
