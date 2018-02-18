@@ -1,1 +1,1 @@
-![Screenshot](output_part2.png)
+![Screenshot](https://github.com/Henkolicious/Machine-Learning/blob/master/Assignment%201/output%20_part2.PNG)
