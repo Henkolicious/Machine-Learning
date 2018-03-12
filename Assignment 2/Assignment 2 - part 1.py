@@ -166,7 +166,7 @@ Weights: 0.5 0.19
 Desired output found after 11 interation(s)
 Weights: 0.5 0.2 Bias:  -0.2 Learning rate:  0.01
 ...
-Output from slides:
+Output from slides values:
 Weights: 0.3 -0.1
 Weights: 0.2 -0.1
 Weights: 0.3 0.0
