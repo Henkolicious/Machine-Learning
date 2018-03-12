@@ -1,6 +1,11 @@
-<h1>Init</h1>
+<h1>Assignment 2</h1>
 <h2>Part 1</h2>
 <pre>
+Output with assignment values:
+Desired output found after 1 interation(s)
+Weights: 0.5 0.1 Bias:  -0.1 Learning rate:  0.01
+...
+Output with other Bias:
 Weights: 0.5 0.1
 Weights: 0.5 0.11
 Weights: 0.5 0.12

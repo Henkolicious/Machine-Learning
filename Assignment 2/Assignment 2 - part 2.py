@@ -20,3 +20,5 @@ b )
 After that, apply K means clustering algorithm to the difference image to obtain the
 changed pixels as 1 and unchanged pixels as 0.
 '''
+
+# use 11x11 so pad with 0

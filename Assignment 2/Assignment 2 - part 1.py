@@ -104,7 +104,8 @@ class Perceptron(object):
                     (float(logicGates[i][1]) *
                      float(self.w2)) + float(self.bias)
 
-                y = round(y, self.numberOfDecimalInRound)  # i get unexpected values otherwise...
+                # i get unexpected values otherwise...
+                y = round(y, self.numberOfDecimalInRound)
 
                 actualOutput = np.append(actualOutput, y)
                 actualOutput[i] = self.activationFunction(actualOutput[i])
@@ -131,8 +132,13 @@ if __name__ == '__main__':
     ])
     desiredOutput = np.array([0, 1, 1, 1])  # OR gate
 
-    perceptron = Perceptron(input_size=2, w1=0.5, w2=0.1,
-                           learingRate=0.01,  epochs=1000, numberOfDecimalInRound=2)
+    perceptron = Perceptron(input_size=2,
+                            w1=0.5,
+                            w2=0.1,
+                            learingRate=0.01,
+                            bias=-0.1,
+                            epochs=1000,
+                            numberOfDecimalInRound=2)
 
     # uncomment this for slides example
     # {
@@ -142,7 +148,11 @@ if __name__ == '__main__':
     perceptron.fit(logicGates, desiredOutput)
 
 '''
-Output from assignment:
+Output with assignment values:
+Desired output found after 1 interation(s)
+Weights: 0.5 0.1 Bias:  -0.1 Learning rate:  0.01
+...
+Output with other Bias:
 Weights: 0.5 0.1
 Weights: 0.5 0.11
 Weights: 0.5 0.12
@@ -155,7 +165,7 @@ Weights: 0.5 0.18
 Weights: 0.5 0.19
 Desired output found after 11 interation(s)
 Weights: 0.5 0.2 Bias:  -0.2 Learning rate:  0.01
-
+...
 Output from slides:
 Weights: 0.3 -0.1
 Weights: 0.2 -0.1
