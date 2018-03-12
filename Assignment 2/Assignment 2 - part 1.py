@@ -24,7 +24,7 @@ class CustomKeyValuePair(object):
 
 
 class Perceptron(object):
-    def __init__(self, input_size=2, w1=0.3, w2=-0.1, bias=-0.2, learingRate=0.1, epochs=100):
+    def __init__(self, input_size=2, w1=0.3, w2=-0.1, bias=-0.2, learingRate=0.1, epochs=100, numberOfDecimalInRound=1):
         self.w1 = w1
         self.finalW1 = []
         self.w2 = w2
@@ -35,6 +35,7 @@ class Perceptron(object):
         self.errors = [0, 0, 0, 0]
         self.iterator = 0
         self.usedValues = []
+        self.numberOfDecimalInRound = numberOfDecimalInRound
 
     def activationFunction(self, x):
         return 1 if x >= 0 else 0
@@ -61,12 +62,12 @@ class Perceptron(object):
             value1 = self.w1 + self.learingRate * \
                 logicGates[i][0] * self.errors[i]
 
-            target = round(value1, 1)
+            target = round(value1, 2)
             self.finalW1.append(target)
 
             value2 = self.w2 + self.learingRate * \
                 logicGates[i][1] * self.errors[i]
-            target = round(value2, 1)
+            target = round(value2, self.numberOfDecimalInRound)
             self.finalW2.append(target)
 
         kvp = self.getKvp()
@@ -75,6 +76,9 @@ class Perceptron(object):
         self.w2 = kvp.w2
 
     def coinFlipWeights(self, unusedWeights):
+        if len(unusedWeights) == 0:
+            return CustomKeyValuePair(self.w1, self.w2)
+
         return unusedWeights[randint(0, len(unusedWeights) - 1)]
 
     def getKvp(self):
@@ -100,7 +104,7 @@ class Perceptron(object):
                     (float(logicGates[i][1]) *
                      float(self.w2)) + float(self.bias)
 
-                y = round(y, 1)  # i get unexpected values otherwise...
+                y = round(y, self.numberOfDecimalInRound)  # i get unexpected values otherwise...
 
                 actualOutput = np.append(actualOutput, y)
                 actualOutput[i] = self.activationFunction(actualOutput[i])
@@ -110,7 +114,8 @@ class Perceptron(object):
             if (self.isDesiredOutput(actualOutput, desiredOutput)):
                 print("Desired output found after",
                       self.iterator, "interation(s)")
-                print("Weights:", self.w1, self.w2, "Bias: ", self.bias, "Learning rate: ",self.learingRate)
+                print("Weights:", self.w1, self.w2, "Bias: ",
+                      self.bias, "Learning rate: ", self.learingRate)
                 break
             else:
                 print("Weights:", self.w1, self.w2)
@@ -124,26 +129,39 @@ if __name__ == '__main__':
         [1, 0],
         [1, 1]
     ])
-    desiredOutput = np.array([0, 0, 0, 1])
+    desiredOutput = np.array([0, 1, 1, 1])  # OR gate
 
-    perceptron = Perceptron(input_size=2, w1=0.1, w2=0.1,
-                            learingRate=0.01,  epochs=1000)
+    perceptron = Perceptron(input_size=2, w1=0.5, w2=0.1,
+                           learingRate=0.01,  epochs=1000, numberOfDecimalInRound=2)
 
     # uncomment this for slides example
-    perceptron = Perceptron() # from slides
+    # {
+    # desiredOutput = np.array([0, 0, 0, 1])  # AND gate
+    # perceptron = Perceptron()  # from slides
+    # }
     perceptron.fit(logicGates, desiredOutput)
 
 '''
 Output from assignment:
-Desired output found after 1 interation(s)
-Weights: 0.1 0.1 Bias:  -0.2 Learning rate:  0.01
+Weights: 0.5 0.1
+Weights: 0.5 0.11
+Weights: 0.5 0.12
+Weights: 0.5 0.13
+Weights: 0.5 0.14
+Weights: 0.5 0.15
+Weights: 0.5 0.16
+Weights: 0.5 0.17
+Weights: 0.5 0.18
+Weights: 0.5 0.19
+Desired output found after 11 interation(s)
+Weights: 0.5 0.2 Bias:  -0.2 Learning rate:  0.01
 
 Output from slides:
 Weights: 0.3 -0.1
 Weights: 0.2 -0.1
-Weights: 0.1 -0.1
-Weights: 0.0 -0.1
-Weights: 0.1 0.0
+Weights: 0.3 0.0
+Weights: 0.2 0.0
+Weights: 0.3 0.1
 Weights: 0.2 0.1
 Desired output found after 7 interation(s)
 Weights: 0.1 0.1 Bias:  -0.2 Learning rate:  0.1
