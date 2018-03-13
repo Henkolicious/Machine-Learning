@@ -46,7 +46,7 @@ def getDistanceMatrix(a, b):
     return np.array(distanceMatrix)
 
 
-def showAllChangedPixles(distanceMatrix):
+def showAllChangedPixles(distanceMatrix, centroids):
     for i in range(distanceMatrix.shape[0]):
         for j in range(distanceMatrix.shape[0]):
             value = distanceMatrix[i][j]
@@ -62,6 +62,8 @@ def showAllChangedPixles(distanceMatrix):
     plt.gca().invert_yaxis()
     plt.title("All changed pixels")
     plt.xlabel("1 = changed pixel value, 0 = unchanged pixel value")
+    #plt.scatter(centroids[:, 0], centroids[:, 1], marker="x",
+    #            color='r', s=150, linewidths=5, zorder=10)
     plt.show()
 
 
@@ -103,4 +105,10 @@ if __name__ == '__main__':
     kmeansModel = KMeans(n_clusters=2).fit(distanceMatrix)
     centroids = kmeansModel.cluster_centers_
 
-    showAllChangedPixles(distanceMatrix)
+    # plt.scatter(centroids[:,0], centroids[:,1])
+    # plt.show()
+    # for i in range(len(distanceMatrix)):
+    #    print("coordinate:",X[i], "label:", labels[i])
+    #    plt.plot(X[i][0], X[i][1], colors[labels[i]], markersize = 10)
+
+    showAllChangedPixles(distanceMatrix, centroids)
