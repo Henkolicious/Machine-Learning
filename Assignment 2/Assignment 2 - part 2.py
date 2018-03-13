@@ -23,10 +23,14 @@ changed pixels as 1 and unchanged pixels as 0.
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pylab as pl
 from matplotlib import style
 style.use("ggplot")
 
 from sklearn.cluster import KMeans
+from sklearn.datasets.samples_generator import make_blobs
+import seaborn as sns
+sns.set()  # for plot styling
 
 
 def getDistanceMatrix(a, b):
@@ -40,6 +44,25 @@ def getDistanceMatrix(a, b):
 
         distanceMatrix.append(tmp)
     return np.array(distanceMatrix)
+
+
+def showAllChangedPixles(distanceMatrix):
+    for i in range(distanceMatrix.shape[0]):
+        for j in range(distanceMatrix.shape[0]):
+            value = distanceMatrix[i][j]
+            if value > 0:
+                plt.plot(j, i, color='r', marker='$' +
+                         str('1') + '$', ls='None')
+            else:
+                plt.plot(j, i, color='b', marker='$' +
+                         str('0') + '$',  ls='None')
+
+    plt.xlim([-1, len(distanceMatrix - 1)])
+    plt.ylim([-1, len(distanceMatrix - 1)])
+    plt.gca().invert_yaxis()
+    plt.title("All changed pixels")
+    plt.xlabel("1 = changed pixel value, 0 = unchanged pixel value")
+    plt.show()
 
 
 if __name__ == '__main__':
@@ -71,29 +94,13 @@ if __name__ == '__main__':
     ])
 
     distanceMatrix = getDistanceMatrix(matrixA, matrixB)
-    # print(distanceMatrix)
 
     # pad to get odd numbers, e.g 11x11
     if len(distanceMatrix - 1) % 2 == 0:
-        paddedDistanceMatrix = np.pad(distanceMatrix, 0, mode='constant')
+        distanceMatrix = np.pad(distanceMatrix, 1, mode='constant')
 
-    print(paddedDistanceMatrix)
-    # kmeansModel = KMeans()
-    # kmeansModel.fit(paddedDistanceMatrix)
+    # print(distanceMatrix)
+    kmeansModel = KMeans(n_clusters=2).fit(distanceMatrix)
+    centroids = kmeansModel.cluster_centers_
 
-    # # degrees of variance - center plot in each cluster
-    # centroids = kmeansModel.cluster_centers_
-
-    # #plt.plot(centroids[:, 0], centroids[:, 1], marker='x', color='r')
-    # #plt.scatter(centroids[:, 0], centroids[:, 1],
-    # #            marker="x", s=150, linewidths=5, zorder=10)
-    # plt.plot(paddedDistanceMatrix)
-    # plt.show()
-
-    # for i in range(len(distanceMatrix)):
-    #     print("Cordinate: ", distanceMatrix[i], "Lable: ", lables[i])
-    #     plt.plot(distanceMatrix[i][0], distanceMatrix[i]
-    #              [1], colors[lables[i]], markersize=10)
-
-        # plt.scatter(centroids[:, 0], centroids[:, 1],
-        #             marker="x", s=150, linewidths=5, zorder=10)
+    showAllChangedPixles(distanceMatrix)
