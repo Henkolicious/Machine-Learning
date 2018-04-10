@@ -12,6 +12,12 @@ import time
 import scipy.misc
 import sys
 
+# pip install -r requirements.txt
+# pip install pipreqs
+# pipreqs /path/to/project
+
+
+
 
 # GET 600 images for training
 # gives total image data
