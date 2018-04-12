@@ -17,57 +17,39 @@ import sys
 # pipreqs /path/to/project
 
 
-
-
-# GET 600 images for training
-# gives total image data
-
-
 def read_whole_training_images(path):
-    # k: number images readed from the path folder
     loadedImages = []
-    #loadedImages1 = []
-    #loadedImages2 = []
     labels = []
-    k = 0
+
     for i in range(len(os.listdir(path))):
         imagesList = listdir(path+os.listdir(path)[i])
-        # print(len(imagesList))
         for image in imagesList:
             image_raw_data_jpg = tf.gfile.FastGFile(
                 path+os.listdir(path)[i]+'/'+image, 'rb').read()
             # Decode each image
-            raw_image = tf.image.decode_png(image_raw_data_jpg, 3)
+            RGB_image = tf.image.decode_png(image_raw_data_jpg, 3)
             # Resize image into the 14x14
-            gray_resize = tf.image.resize_images(raw_image, [100, 100])
+            gray_resize = tf.image.resize_images(RGB_image, [100, 100])
             loadedImages.append(gray_resize)
             labels.append(onehot_encoded[i][:])
-            k = k+1
+
     return loadedImages, labels
 
 
 if __name__ == '__main__':
-
-    values = ["crayfish", "elephant", "flamingo",
-              "hedgehog", "kangaroo", "leopards"]
+    values = ["crayfish", "elephant", "flamingo", "hedgehog", "kangaroo", "leopards"]
     print("The given classes are", values)
-    # integer encode
+    
     label_encoder = LabelEncoder()
     integer_encoded = label_encoder.fit_transform(values)
-    # print(integer_encoded)
-    # binary encode
+
     onehot_encoder = OneHotEncoder(sparse=False)
     integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
     onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
 
     sess = tf.InteractiveSession()
-    tf.global_variables_initializer().run()
-    # Define the folder which you want to upload the images
-    # Training folder must have 6 subfolders named "crayfish","elephant","flamingo","hedgehog","kangaroo","leopards"
-    # Each subfolder must have 65 images
-    # path="D:/cleandata/train_data/"
+    tf.global_variables_initializer().run()  
     path = "C:/My Projects/Python/Machine Learning/Assignment 3/training/"
-    # Load all imaged from the folder
 
     loadedImages, labels = read_whole_training_images(path)
     loadedImages = sess.run(tf.image.rgb_to_grayscale(loadedImages))
@@ -80,7 +62,7 @@ if __name__ == '__main__':
     training_dataset = []
     training_dataset = sess.run(tf.reshape(loadedImages, [-1, 10000]))
     trainig_labels = labels
-    # print(type(training_dataset))
+    print(type(training_dataset))
 
     labels_training = np.array(trainig_labels, 'float32')
 
