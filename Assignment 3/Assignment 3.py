@@ -1,173 +1,134 @@
-import matplotlib.pyplot as plt
-import tensorflow as tf
+# sequence of layers
+from keras.models import Sequential
+# images or in 2D, videos are in 3D (time)
+from keras.layers import Convolution2D
+# pooling step (pooling layers)
+from keras.layers import MaxPool2D
+# flattening, convert pooled feature map to a vector
+from keras.layers import Flatten
+# add the fully connected layer
+from keras.layers import Dense
+# transforming images randomly
+from keras.preprocessing.image import ImageDataGenerator
+# required for keras
+import PIL
 import numpy as np
-import os
-from os import listdir
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
-from numpy import argmax
-import random
-import cv2
-import time
-import scipy.misc
-import sys
+# for predictions and imports
+from keras.preprocessing import image
+import tensorflow as tf
 
-# pip install -r requirements.txt
-# pip install pipreqs
-# pipreqs /path/to/project
+# Proccess >> Convolution > Max pooling > Flattening > Fully connect
 
+# 1. Convolution
+#   * Input image
+#   * Feature Detector (several)
+#   * Feature Map (same number as #FeatureDetectors)
 
-def read_whole_training_images(path):
-    loadedImages = []
-    labels = []
-
-    for i in range(len(os.listdir(path))):
-        imagesList = listdir(path+os.listdir(path)[i])
-        for image in imagesList:
-            image_raw_data_jpg = tf.gfile.FastGFile(
-                path+os.listdir(path)[i]+'/'+image, 'rb').read()
-            # Decode each image
-            RGB_image = tf.image.decode_png(image_raw_data_jpg, 3)
-            # Resize image into the 14x14
-            gray_resize = tf.image.resize_images(RGB_image, [100, 100])
-            loadedImages.append(gray_resize)
-            labels.append(onehot_encoded[i][:])
-
-    return loadedImages, labels
+# globals
+image_height = 64
+image_width = 64
+number_of_images = 80
+number_of_test_images = 2
+number_of_epochs = 1
 
 
-if __name__ == '__main__':
-    values = ["crayfish", "elephant", "flamingo", "hedgehog", "kangaroo", "leopards"]
-    print("The given classes are", values)
-    
-    label_encoder = LabelEncoder()
-    integer_encoded = label_encoder.fit_transform(values)
+def initCNN():
+    # init CNN with keras
+    classifier = Sequential()
 
-    onehot_encoder = OneHotEncoder(sparse=False)
-    integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
-    onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
+    # Convolution2D(
+    #   number of feature detectors,
+    #   number of rows feature detector,
+    #   number of columns feature detector
+    #       input_shape=(size, size, channles) >> Tensorflow backend, other way around in Theano
+    #       activation='relu' >> activation function - rectifier activation for none negative values (non-linearity)
+    #   )
+    classifier.add(Convolution2D(
+        32, 3, 3, input_shape=(image_height, image_width, 3), activation='relu'))
 
-    sess = tf.InteractiveSession()
-    tf.global_variables_initializer().run()  
-    path = "C:/My Projects/Python/Machine Learning/Assignment 3/training/"
+    # Max pooling >> reduce the size of the feature map > and therefore reduce the number of nodes in the fully connected layer
+    # > witch reduces the complexity and the time execution, without losing the preformace
+    classifier.add(MaxPool2D(pool_size=(2, 2)))
 
-    loadedImages, labels = read_whole_training_images(path)
-    loadedImages = sess.run(tf.image.rgb_to_grayscale(loadedImages))
+    # Adding a second convolutional layer
+    classifier.add(Convolution2D(32, 3, 3, activation='relu'))
+    classifier.add(MaxPool2D(pool_size=(2, 2)))
 
-    for i in range(1, len(loadedImages), 20):
-        print(values[np.argmax(labels[i])])
-        plt.imshow(loadedImages[i][:, :, 0], cmap='gray')
-        # plt.show()
+    # Adding a third convolutional layer with 64 feature detectors
+    classifier.add(Convolution2D(64, 3, 3, activation='relu'))
+    classifier.add(MaxPool2D(pool_size=(2, 2)))
 
-    training_dataset = []
-    training_dataset = sess.run(tf.reshape(loadedImages, [-1, 10000]))
-    trainig_labels = labels
-    print(type(training_dataset))
+    # Flattening
+    classifier.add(Flatten())
 
-    labels_training = np.array(trainig_labels, 'float32')
+    # Fully connect layer with rectifier activation functin
+    classifier.add(Dense(units=128, activation='relu'))
 
-    tf.reset_default_graph()
+    # Output layer - binary classes, activation=softmax for more classes than 2
+    classifier.add(Dense(units=1, activation='sigmoid'))
 
-    X = tf.placeholder(tf.float32, [None, 10000])
-    X_img = tf.reshape(X, [-1, 100, 100, 1])   # img 32x32x1 (Grayscale)
-    Y = tf.placeholder(tf.float32, [None, 6])
+    # Compiling the CNN
+    # optimizer = stocastic gradiant decent
+    # loss = binary outcome (2 classes) - more then 2 >> categorical_crossentropy
+    classifier.compile(
+        optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-    # L1 ImgIn shape=(?, 28, 28, 1)
-    W1 = tf.Variable(tf.random_normal([3, 3, 1, 32], stddev=0.01))
-    #    Conv     -> (?, 28, 28, 32)
-    #    Pool     -> (?, 14, 14, 32)
+    return classifier
 
-    # Convolutional Layer One
-    L1 = tf.nn.conv2d(X_img, W1, strides=[1, 1, 1, 1], padding='SAME')
-    L1 = tf.nn.relu(L1)
-    L1 = tf.nn.max_pool(L1, ksize=[1, 2, 2, 1], strides=[
-                        1, 2, 2, 1], padding='SAME')
+# Example of using .flow_from_directory(directory):
 
-    # L2 ImgIn shape=(?, 14, 14, 32)
-    # Convolutional Layer Two
-    W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=0.01))
-    #    Conv      ->(?, 14, 14, 64)
-    #    Pool      ->(?, 7, 7, 64)
-    L2 = tf.nn.conv2d(L1, W2, strides=[1, 1, 1, 1], padding='SAME')
-    L2 = tf.nn.relu(L2)
-    L2 = tf.nn.max_pool(L2, ksize=[1, 2, 2, 1], strides=[
-                        1, 2, 2, 1], padding='SAME')
 
-    # Reshape as input to the FC network
-    L2 = tf.reshape(L2, [-1, 25 * 25 * 64])
+def augmentImages(classifier):
+    # geometrical transformation
+    train_datagen = ImageDataGenerator(
+        rescale=1./255,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True)
 
-    # Final FC 7x7x64 inputs -> 6 outputs
+    # rescaling pixles, preprocess
+    test_datagen = ImageDataGenerator(rescale=1./255)
 
-    #W3 = tf.get_variable("W3", shape=[25 * 25 * 64, 6], initializer=tf.contrib.layers.xavier_initializer())
-    W3 = tf.get_variable("W3", shape=[25 * 25 * 64, 6],
-                         initializer=tf.contrib.layers.xavier_initializer())
-    b = tf.Variable(tf.random_normal([6]))
-    hypothesis = tf.matmul(L2, W3) + b
+    # apply image augmentation and resizing
+    training_set = train_datagen.flow_from_directory(
+        'dataset/training_set',
+        target_size=(image_height, image_width),
+        batch_size=32,
+        class_mode='binary')
 
-    learning_rate = 0.01
-    # define cost/loss & optimizer
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-        logits=hypothesis, labels=Y))
-    optimizer = tf.train.AdamOptimizer(
-        learning_rate=learning_rate).minimize(cost)
+    test_set = test_datagen.flow_from_directory(
+        'dataset/test_set',
+        target_size=(image_height, image_width),
+        batch_size=32,
+        class_mode='binary')
 
-    def next_batch(num, data, labels, idx):
-        '''
-        Return a total of `num` random samples and labels. 
-        '''
-        idx = idx[:num]
-        data_shuffle = [data[i] for i in idx]
-        labels_shuffle = [labels[i] for i in idx]
+    classifier.fit_generator(
+        training_set,
+        steps_per_epoch=number_of_images,
+        epochs=number_of_epochs,
+        validation_data=test_set,
+        validation_steps=number_of_test_images)
 
-        return np.asarray(data_shuffle), np.asarray(labels_shuffle)
+    return classifier, training_set
 
-    Xtr_Original, Ytr_Original = training_dataset, labels_training
-    # initialize
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
-    batch_size = 10
-    number_of_training = 50
-    epochs = 7
-    # train my model
-    print('Learning started. It takes sometime.')
-    for _ in range(number_of_training):
-        for i in range(epochs):
-            idx = random.sample(range(0, len(Ytr_Original)), batch_size)
-            idx = np.sort(idx)
-            Xtr_training, Ytr_training = next_batch(
-                batch_size, Xtr_Original, Ytr_Original, idx)
-            sess.run([cost, optimizer], feed_dict={
-                X: Xtr_training, Y: Ytr_training})
 
-    correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    print(sess.run(accuracy, feed_dict={
-          X: training_dataset, Y: labels_training}))
+if __name__ == '__main__':   
+    classifier = initCNN()
+    classifier, training_set = augmentImages(classifier)
 
-    #######################################################################################
-    # TESTING
-    # Testing folder must have 6 subfolders named "crayfish","elephant","flamingo","hedgehog","kangaroo","leopards"
-    # Each subfolder must have 5 images (the ones which you didnt use for training)
-    path_test = "C:/My Projects/Python/Machine Learning/Assignment 3/training/"
-    testImages, testlabels = read_whole_training_images(path_test)
-    testImages = sess.run(tf.image.rgb_to_grayscale(testImages))
+    # testing
+    test_image = image.load_img("dataset/single_prediction/cat_or_dog_1.jpg", target_size=(image_height, image_width))
+    # from 2D to 3D (colored image)
+    test_image = image.img_to_array(test_image)
+    # 3D to 4D so prediction works (input needs to be in a batch)
+    test_image = np.expand_dims(test_image, 0)
 
-    test_dataset = []
-    test_dataset = sess.run(tf.reshape(testImages, [-1, 10000]))
-    test_labels = testlabels
-    # print(type(training_dataset))
+    result = classifier.predict(test_image)
+    print(result)
 
-    test_labels = np.array(test_labels, 'float32')
+    print(training_set.class_indices)
 
-    correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    print(sess.run(accuracy, feed_dict={X: test_dataset, Y: test_labels}))
-
-    print("TESTING THE IMAGES")
-    for i in range(1, len(testImages)):
-        data = test_dataset[i, :]
-        result = sess.run(tf.argmax(hypothesis, 1), feed_dict={X: [data]})
-        print(values[result[0]])
-        plt.imshow(testImages[i][:, :, 0], cmap='gray')
-        # plt.show()
-        # time.sleep(1)
+    if result[0][0] == 1:
+        print("dog")
+    else:
+        print("cat")
