@@ -27,13 +27,13 @@ import time
 #   * Feature Map (same number as #FeatureDetectors)
 
 # globals
-image_height = 64
-image_width = 64
+image_height = 128
+image_width = 128
 number_of_images = 65
 number_of_test_images = 5
-number_of_epochs = 200
+number_of_epochs = 100
 number_of_classes = 6
-batch_size = 5
+batch_size = 1
 testing_directory = 'dataset/test_set'
 training_directory = 'dataset/training_set'
 
@@ -67,7 +67,7 @@ def initCNN():
     # Flattening
     classifier.add(Flatten())
 
-    # Fully connect layer with rectifier activation functin
+    # Fully connect layer with rectifier activation function
     classifier.add(Dense(units=128, activation='relu'))
 
     # Output layer - binary classes, activation=softmax for more classes than 2, binary=sigmoid
@@ -80,7 +80,7 @@ def initCNN():
         optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     return classifier
-    
+
 
 def augmentImages(classifier):
     # geometrical transformation

@@ -5,6 +5,8 @@
 <h1>Output:</h1>
 <pre>
 Classes are:  {'crayfish': 0, 'elephant': 1, 'flamingo': 2, 'hedgehog': 3, 'kangaroo': 4, 'leopards': 5}
+</pre>
+<pre>
 Guess: crayfish. Actual = crayfish
 Guess: hedgehog. Actual = crayfish
 Guess: crayfish. Actual = crayfish
@@ -44,4 +46,51 @@ Batch size / epoch:      5
 Number of classes:       6
 Total guess accurasy:    0.6666666666666666
 Execution time:          388 seconds
+</pre>
+<br/>
+<br/>
+<h2>Other parameters</h2>
+<pre>
+Classes are:  {'crayfish': 0, 'elephant': 1, 'flamingo': 2, 'hedgehog': 3, 'kangaroo': 4, 'leopards': 5}
+</pre>
+<pre>
+Guess: elephant. Actual = crayfish
+Guess: crayfish. Actual = crayfish
+Guess: crayfish. Actual = crayfish
+Guess: crayfish. Actual = crayfish
+Guess: crayfish. Actual = crayfish
+Guess: elephant. Actual = elephant
+Guess: elephant. Actual = elephant
+Guess: elephant. Actual = elephant
+Guess: crayfish. Actual = elephant
+Guess: elephant. Actual = elephant
+Guess: crayfish. Actual = flamingo
+Guess: elephant. Actual = flamingo
+Guess: flamingo. Actual = flamingo
+Guess: flamingo. Actual = flamingo
+Guess: flamingo. Actual = flamingo
+Guess: elephant. Actual = hedgehog
+Guess: elephant. Actual = hedgehog
+Guess: elephant. Actual = hedgehog
+Guess: flamingo. Actual = hedgehog
+Guess: kangaroo. Actual = hedgehog
+Guess: crayfish. Actual = kangaroo
+Guess: crayfish. Actual = kangaroo
+Guess: elephant. Actual = kangaroo
+Guess: crayfish. Actual = kangaroo
+Guess: elephant. Actual = kangaroo
+Guess: elephant. Actual = leopards
+Guess: elephant. Actual = leopards
+Guess: elephant. Actual = leopards
+Guess: elephant. Actual = leopards
+Guess: crayfish. Actual = leopards
+</pre>
+<pre>
+Image scaling:           128 x 128
+Number of images:        65
+Number of epochs:        100
+Batch size / epoch:      1
+Number of classes:       6
+Total guess accurasy:    0.36666666666666664
+Execution time:          258 seconds
 </pre>
