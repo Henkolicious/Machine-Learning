@@ -1,3 +1,7 @@
+<h1>Convolutional Neural Network</h1>
+<h2>Image classification with 6 classes</h2>
+<br/>
+<h1>Output:</h1>
 <pre>
 Classes are:  {'crayfish': 0, 'elephant': 1, 'flamingo': 2, 'hedgehog': 3, 'kangaroo': 4, 'leopards': 5}
 Guess: crayfish. Actual = crayfish
