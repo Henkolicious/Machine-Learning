@@ -80,9 +80,7 @@ def initCNN():
         optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     return classifier
-
-# Example of using .flow_from_directory(directory):
-
+    
 
 def augmentImages(classifier):
     # geometrical transformation
