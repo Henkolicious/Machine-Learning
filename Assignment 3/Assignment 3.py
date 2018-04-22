@@ -16,6 +16,8 @@ import numpy as np
 # for predictions and imports
 from keras.preprocessing import image
 import tensorflow as tf
+import glob
+import time
 
 # Proccess >> Convolution > Max pooling > Flattening > Fully connect
 
@@ -27,9 +29,13 @@ import tensorflow as tf
 # globals
 image_height = 64
 image_width = 64
-number_of_images = 80
-number_of_test_images = 2
-number_of_epochs = 1
+number_of_images = 65
+number_of_test_images = 5
+number_of_epochs = 200
+number_of_classes = 6
+batch_size = 5
+testing_directory = 'dataset/test_set'
+training_directory = 'dataset/training_set'
 
 
 def initCNN():
@@ -64,14 +70,14 @@ def initCNN():
     # Fully connect layer with rectifier activation functin
     classifier.add(Dense(units=128, activation='relu'))
 
-    # Output layer - binary classes, activation=softmax for more classes than 2
-    classifier.add(Dense(units=1, activation='sigmoid'))
+    # Output layer - binary classes, activation=softmax for more classes than 2, binary=sigmoid
+    classifier.add(Dense(units=number_of_classes, activation='softmax'))
 
     # Compiling the CNN
     # optimizer = stocastic gradiant decent
-    # loss = binary outcome (2 classes) - more then 2 >> categorical_crossentropy
+    # loss = binary outcome (2 classes) - more then 2 >> categorical_crossentropy, else loss=binary_crossentropy
     classifier.compile(
-        optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+        optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     return classifier
 
@@ -91,16 +97,16 @@ def augmentImages(classifier):
 
     # apply image augmentation and resizing
     training_set = train_datagen.flow_from_directory(
-        'dataset/training_set',
+        training_directory,
         target_size=(image_height, image_width),
-        batch_size=32,
-        class_mode='binary')
+        batch_size=batch_size,
+        class_mode='categorical')
 
     test_set = test_datagen.flow_from_directory(
-        'dataset/test_set',
+        testing_directory,
         target_size=(image_height, image_width),
-        batch_size=32,
-        class_mode='binary')
+        batch_size=batch_size,
+        class_mode='categorical')
 
     classifier.fit_generator(
         training_set,
@@ -112,23 +118,83 @@ def augmentImages(classifier):
     return classifier, training_set
 
 
-if __name__ == '__main__':   
+def getTestImages():
+    imgArr = glob.glob(testing_directory + "/crayfish/*.jpg")
+    imgArr += glob.glob(testing_directory + "/elephant/*.jpg")
+    imgArr += glob.glob(testing_directory + "/flamingo/*.jpg")
+    imgArr += glob.glob(testing_directory + "/hedgehog/*.jpg")
+    imgArr += glob.glob(testing_directory + "/kangaroo/*.jpg")
+    imgArr += glob.glob(testing_directory + "/leopards/*.jpg")
+    return imgArr
+
+
+def isGuessCorrect(a, b):
+    if (a == b):
+        return 1
+    else:
+        return 0
+
+
+def getMaxValueIndex(values):
+    return np.argmax(values)
+
+
+def classifyTestingImages(classifier, training_set):
+    guessCorrect = 0
+    imgArr = getTestImages()
+    print("Classes are: ", training_set.class_indices)
+
+    for img in imgArr:
+        temp = img.split("/")[2]
+        actualClass = temp.split("\\")[0]
+
+        test_image = image.load_img(
+            img, target_size=(image_height, image_width))
+        # from 2D to 3D (colored image)
+        test_image = image.img_to_array(test_image)
+        # 3D to 4D so prediction works (input needs to be in a batch)
+        test_image = np.expand_dims(test_image, 0)
+
+        result = classifier.predict(test_image)
+        highestVote = getMaxValueIndex(result)
+
+        if highestVote == 0:
+            print("Guess: crayfish. Actual =", actualClass)
+            guessCorrect += isGuessCorrect("crayfish", actualClass)
+
+        elif highestVote == 1:
+            print("Guess: elephant. Actual =", actualClass)
+            guessCorrect += isGuessCorrect("elephant", actualClass)
+
+        elif highestVote == 2:
+            print("Guess: flamingo. Actual =", actualClass)
+            guessCorrect += isGuessCorrect("flamingo", actualClass)
+
+        elif highestVote == 3:
+            print("Guess: hedgehog. Actual =", actualClass)
+            guessCorrect += isGuessCorrect("hedgehog", actualClass)
+
+        elif highestVote == 4:
+            print("Guess: kangaroo. Actual =", actualClass)
+            guessCorrect += isGuessCorrect("kangaroo", actualClass)
+
+        else:
+            print("Guess: leopards. Actual =", actualClass)
+            guessCorrect += isGuessCorrect("leopards", actualClass)
+
+    print()
+    print("Image scaling: \t\t", image_height, "x", image_width)
+    print("Number of images: \t", number_of_images)
+    print("Number of epochs: \t", number_of_epochs)
+    print("Batch size / epoch: \t", batch_size)
+    print("Number of classes: \t", number_of_classes)
+    print("Total guess accurasy: \t", guessCorrect / len(imgArr))
+
+
+if __name__ == '__main__':
+    start = time.time()
     classifier = initCNN()
     classifier, training_set = augmentImages(classifier)
-
-    # testing
-    test_image = image.load_img("dataset/single_prediction/cat_or_dog_1.jpg", target_size=(image_height, image_width))
-    # from 2D to 3D (colored image)
-    test_image = image.img_to_array(test_image)
-    # 3D to 4D so prediction works (input needs to be in a batch)
-    test_image = np.expand_dims(test_image, 0)
-
-    result = classifier.predict(test_image)
-    print(result)
-
-    print(training_set.class_indices)
-
-    if result[0][0] == 1:
-        print("dog")
-    else:
-        print("cat")
+    classifyTestingImages(classifier, training_set)
+    end = time.time()
+    print("Execution time: \t", (int)(end-start), "seconds")
