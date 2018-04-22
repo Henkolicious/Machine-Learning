@@ -44,7 +44,7 @@ Number of images:        65
 Number of epochs:        200
 Batch size / epoch:      5
 Number of classes:       6
-Total guess accurasy:    0.6666666666666666
+Total guess accuracy:    0.6666666666666666
 Execution time:          388 seconds
 </pre>
 <br/>
@@ -91,6 +91,53 @@ Number of images:        65
 Number of epochs:        100
 Batch size / epoch:      1
 Number of classes:       6
-Total guess accurasy:    0.36666666666666664
+Total guess accuracy:    0.36666666666666664
 Execution time:          258 seconds
+</pre>
+<br/>
+<br/>
+<h2>Other parameters</h2>
+<pre>
+Classes are:  {'crayfish': 0, 'elephant': 1, 'flamingo': 2, 'hedgehog': 3, 'kangaroo': 4, 'leopards': 5}
+</pre>
+<pre>
+Guess: elephant. Actual = crayfish
+Guess: kangaroo. Actual = crayfish
+Guess: crayfish. Actual = crayfish
+Guess: crayfish. Actual = crayfish
+Guess: hedgehog. Actual = crayfish
+Guess: elephant. Actual = elephant
+Guess: elephant. Actual = elephant
+Guess: elephant. Actual = elephant
+Guess: kangaroo. Actual = elephant
+Guess: hedgehog. Actual = elephant
+Guess: flamingo. Actual = flamingo
+Guess: hedgehog. Actual = flamingo
+Guess: hedgehog. Actual = flamingo
+Guess: flamingo. Actual = flamingo
+Guess: flamingo. Actual = flamingo
+Guess: hedgehog. Actual = hedgehog
+Guess: hedgehog. Actual = hedgehog
+Guess: hedgehog. Actual = hedgehog
+Guess: hedgehog. Actual = hedgehog
+Guess: hedgehog. Actual = hedgehog
+Guess: kangaroo. Actual = kangaroo
+Guess: kangaroo. Actual = kangaroo
+Guess: kangaroo. Actual = kangaroo
+Guess: hedgehog. Actual = kangaroo
+Guess: hedgehog. Actual = kangaroo
+Guess: kangaroo. Actual = leopards
+Guess: leopards. Actual = leopards
+Guess: hedgehog. Actual = leopards
+Guess: leopards. Actual = leopards
+Guess: leopards. Actual = leopards
+</pre>
+<pre>
+Image scaling:           100 x 100
+Number of images:        65
+Number of epochs:        100
+Batch size / epoch:      65
+Number of classes:       6
+Total guess accurasy:    0.6333333333333333
+Execution time:          197 seconds
 </pre>

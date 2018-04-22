@@ -27,13 +27,13 @@ import time
 #   * Feature Map (same number as #FeatureDetectors)
 
 # globals
-image_height = 128
-image_width = 128
+image_height = 100
+image_width = 100
 number_of_images = 65
 number_of_test_images = 5
 number_of_epochs = 100
 number_of_classes = 6
-batch_size = 1
+batch_size = 65 # must be 1 or greater
 testing_directory = 'dataset/test_set'
 training_directory = 'dataset/training_set'
 
@@ -108,7 +108,7 @@ def augmentImages(classifier):
 
     classifier.fit_generator(
         training_set,
-        steps_per_epoch=number_of_images,
+        steps_per_epoch=number_of_images/batch_size,
         epochs=number_of_epochs,
         validation_data=test_set,
         validation_steps=number_of_test_images)
@@ -186,7 +186,7 @@ def classifyTestingImages(classifier, training_set):
     print("Number of epochs: \t", number_of_epochs)
     print("Batch size / epoch: \t", batch_size)
     print("Number of classes: \t", number_of_classes)
-    print("Total guess accurasy: \t", guessCorrect / len(imgArr))
+    print("Total guess accuracy: \t", guessCorrect / len(imgArr))
 
 
 if __name__ == '__main__':
