@@ -1,6 +1,7 @@
 <h1>Convolutional Neural Network</h1>
 <h2>Image classification with 6 classes</h2>
 <p>Built with Keras, see <i>"Assignment 3.py"</i> for source code.</p>
+<p><b>Proccess</b> >> Convolution > Max pooling > Flattening > Fully connect</p>
 <br/>
 <h1>Output:</h1>
 <pre>
